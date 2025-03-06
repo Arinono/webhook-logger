@@ -26,6 +26,18 @@ const moment = require('moment');
 
 const app = express();
 const PORT = process.env.PORT || 4001;
+const AUTOREFRESH = (() => {
+  const env = process.env.AUTOREFRESH;
+  if (env === undefined || env === '') {
+    return false;
+  }
+
+  try {
+    return parseInt(env, 10);
+  } catch {
+    return false;
+  }
+})();
 
 // Setup logging
 app.use(morgan('dev'));
@@ -81,10 +93,11 @@ app.get('/ui', (req, res) => {
         </div>
       `).join('')}
     </div>
-    <script>
-      // Auto-refresh every 5 seconds
-      setTimeout(() => location.reload(), 5e3);
-    </script>
+    ${AUTOREFRESH !== false ? `
+      <script>
+        setTimeout(() => location.reload(), ${AUTOREFRESH}e3);
+      </script>`
+      : ''}
   </body>
   </html>
   `;
