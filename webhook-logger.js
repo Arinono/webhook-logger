@@ -26,12 +26,6 @@ const moment = require('moment');
 
 const app = express();
 const PORT = process.env.PORT || 4001;
-const logDir = path.join(__dirname, 'logs');
-
-// Create logs directory if it doesn't exist
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir);
-}
 
 // Setup logging
 app.use(morgan('dev'));
@@ -70,7 +64,7 @@ app.get('/ui', (req, res) => {
     <h1>Webhook Logger</h1>
     <button class="refresh" onclick="location.reload()">Refresh</button>
     <div id="webhooks">
-      ${webhooks.length === 0 ? '<p class="empty">No webhooks received yet. Send a request to any endpoint on this server.</p>' : ''}
+      ${webhooks.length === 0 ? '<p class="empty">No webhooks received yet. Send a request to /wh endpoint on this server.</p>' : ''}
       ${webhooks.reverse().map(hook => `
         <div class="webhook">
           <div>
@@ -117,16 +111,12 @@ app.all('/wh/*', (req, res) => {
   // Log to console
   console.log(chalk.green(`[${timestamp}] Webhook received on: ${req.method} ${req.path}`));
 
-  // Log to file
-  const logFile = path.join(logDir, `webhook-${moment().format('YYYY-MM-DD')}.log`);
-  fs.appendFileSync(logFile, JSON.stringify(webhookData, null, 2) + '\n\n');
-
   // Send response
   res.status(200).json({ success: true, message: 'Webhook received' });
 });
 
 app.listen(PORT, () => {
   console.log(chalk.blue(`Webhook logger started on http://localhost:${PORT}`));
-  console.log(chalk.yellow(`Send webhooks to any endpoint on this server`));
-  console.log(chalk.yellow(`View the web UI at http://localhost:${PORT}`));
+  console.log(chalk.yellow(`Send webhooks to /wh/* endpoint on this server`));
+  console.log(chalk.yellow(`View the web UI at http://localhost:${PORT}/ui`));
 });
