@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "start": "node webhook-logger.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "chalk": "^4.1.2",
+    "express": "^4.21.2",
+    "moment": "^2.30.1",
+    "morgan": "^1.10.0"
+  }
+}
